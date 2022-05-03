@@ -6,6 +6,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       title: 'Virtual Keyboard',
+      template: 'src/index.html',
     }),
   ],
   output: {

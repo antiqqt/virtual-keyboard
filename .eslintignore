@@ -1,1 +1,7 @@
-dist/
+.vscode/*
+dist/*
+assets/*
+node_modules/*
+**/index.html
+**/index.*.html
+**/assets/*.html

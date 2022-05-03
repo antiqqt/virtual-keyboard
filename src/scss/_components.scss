@@ -1,0 +1,95 @@
+// Buttons
+// Links
+a {
+  font-family: $ff-link;
+  font-size: $fs-link;
+  text-decoration: none;
+  transition: 0.4s;
+
+  &:visited {
+    color: $clr-blue;
+  }
+
+  &:hover {
+    color: $clr-scarlet;
+  }
+}
+
+// Headings
+.heading {
+  position: relative;
+  font-family: $ff-heading;
+  font-size: $fs-heading;
+  color: $clr-dark;
+  line-height: 130%;
+  letter-spacing: 0.006em;
+}
+
+.subheading {
+  font-family: $ff-heading;
+  font-size: $fs-subheading;
+  font-weight: $fw-bold;
+  color: $clr-dark;
+  word-spacing: 0.25em;
+}
+
+// About me block
+.about-me {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  column-gap: 12.5%;
+  white-space: nowrap;
+
+  &__link {
+    display: inline-block;
+    width: max-content;
+  }
+}
+
+// Typing area
+.typing-panel {
+  width: 700px;
+  height: 200px;
+  padding: 0.5em;
+  font-size: 2.5rem;
+  line-height: 130%;
+  border-radius: 5px;
+  hyphens: auto;
+  word-break: break-word;
+  resize: none;
+}
+
+// Keyboard
+.keyboard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  row-gap: 3px;
+  max-width: 840px;
+  padding: 10px;
+  background-color: $clr-dark;
+  border-radius: 3px;
+
+  &__row {
+    display: flex;
+    justify-content: space-between;
+    column-gap: 3px;
+  }
+}
+
+.key {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  font-size: $fs-key;
+  background-color: $clr-light-xl;
+  border-radius: 3px;
+  user-select: none;
+
+  &--double {
+    width: 100px;
+  }
+}

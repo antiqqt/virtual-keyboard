@@ -4,4 +4,8 @@ module.exports = {
   rules: {
     'prettier/prettier': ['error'],
   },
+  env: {
+    browser: true,
+    node: true,
+  },
 };
