@@ -5,6 +5,7 @@ a {
   font-size: $fs-link;
   text-decoration: none;
   transition: 0.4s;
+  cursor: pointer;
 
   &:visited {
     color: $clr-blue;
@@ -64,17 +65,18 @@ a {
 .keyboard {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  row-gap: 3px;
-  max-width: 840px;
+  row-gap: 6px;
   padding: 10px;
   background-color: $clr-dark;
+  border: none;
   border-radius: 3px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+  user-select: none;
 
   &__row {
     display: flex;
-    justify-content: space-between;
-    column-gap: 3px;
+    column-gap: 6px;
+    width: 100%;
   }
 }
 
@@ -82,14 +84,77 @@ a {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
   font-size: $fs-key;
   background-color: $clr-light-xl;
+  border: 2px solid $clr-light-dim;
   border-radius: 3px;
-  user-select: none;
+  box-shadow: 0.5px 0.5px 0 $clr-light-dim;
+  outline: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.2s;
 
-  &--double {
+  &--medium {
+    width: 47px;
+  }
+
+  &--extra-medium {
+    width: 86px;
+  }
+
+  &--wide {
     width: 100px;
+  }
+
+  &--extra-wide {
+    width: 309.5px;
+  }
+
+  &--grey {
+    background-color: $clr-grey;
+    border-color: $clr-grey-dim;
+    box-shadow: 0.5px 0.5px 0 $clr-grey-dim;
+  }
+
+  &--blue {
+    background-color: $clr-blue;
+    border-color: $clr-blue-dim;
+    box-shadow: 0.5px 0.5px 0 $clr-blue-dim;
+  }
+
+  &--purple {
+    background-color: $clr-purple;
+    border-color: $clr-purple-dim;
+    box-shadow: 0.5px 0.5px 0 $clr-purple-dim;
+  }
+
+  &--scarlet {
+    background-color: $clr-scarlet;
+    border-color: $clr-scarlet-dim;
+    box-shadow: 0.5px 0.5px 0 $clr-scarlet-dim;
+  }
+
+  &--yellow {
+    background-color: $clr-yellow;
+    border-color: $clr-yellow-dim;
+    box-shadow: 0.5px 0.5px 0 $clr-yellow-dim;
+  }
+
+  &--peach {
+    background-color: $clr-peach;
+    border-color: $clr-peach-dim;
+    box-shadow: 0.5px 0.5px 0 $clr-peach-dim;
+  }
+
+  &--active {
+    color: $clr-light-xl;
+    background-color: $clr-dark-xl;
+  }
+
+  &:active {
+    background-color: $clr-grey;
   }
 }
