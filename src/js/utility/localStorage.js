@@ -1,9 +1,9 @@
 function setToLocalStorage(name, value) {
-  window.localStorage.setItem(name, value);
+  window.localStorage.setItem(name, JSON.stringify(value));
 }
 
 function getFromLocalStorage(name) {
-  return window.localStorage.getItem(name);
+  return JSON.parse(window.localStorage.getItem(name));
 }
 
 function removeFromLocalStorage(name) {

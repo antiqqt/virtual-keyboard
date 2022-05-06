@@ -18,6 +18,27 @@ export default class Key {
     this.element = elem;
   }
 
+  reinitialize(newPropertiesObj, isCapsLockOn = false, isShiftOn = false) {
+    if (!newPropertiesObj || typeof newPropertiesObj !== 'object') {
+      throw new Error('No property object specified');
+    }
+    this.properties = { ...newPropertiesObj };
+
+    const isLetter =
+      this.element.innerText.length === 1 &&
+      this.element.innerText.toLowerCase() !==
+        this.element.innerText.toUpperCase();
+
+    const isConvertableOnShift = Boolean(this.properties.shift);
+
+    if ((isCapsLockOn && isLetter) || (isShiftOn && isConvertableOnShift)) {
+      this.element.innerText = this.properties.shift;
+      return;
+    }
+
+    this.element.innerText = this.properties.default;
+  }
+
   addSize() {
     const elem = this.element;
     const elemCode = this.properties.code;

@@ -5,14 +5,15 @@ import Key from './key';
 export default class Keyboard {
   constructor() {
     this.keyboardElement = null;
-    this.keys = [];
     this.typingBoard = null;
-    this.lang = 'english';
+    this.keys = [];
 
-    this.eventHandlers = {
-      oninput: null,
-      onclose: null,
-    };
+    this.languages = ['english', 'russian'];
+    this.currentLanguage = 'english';
+    this.currentLanguageIndex = 0;
+
+    this.rows = [];
+    this.rowEnds = [14, 29, 42, 55, 64];
 
     this.properties = {
       value: '',
@@ -40,41 +41,42 @@ export default class Keyboard {
 
     // Create keyrows
     // and append them to the keyboard
-    const keyRows = [];
-    for (let i = 0; i < 5; i += 1) {
-      const keyRow = this.createKeyRow(i, 'english');
-      keyRows.push(keyRow);
-    }
-    this.keyboardElement.append(...keyRows);
+    this.createKeys();
+    this.createRows();
+    this.keyboardElement.append(...this.rows);
 
     // Create typing board
     this.createTypingBoard();
   }
 
-  createKeyRow(rowNumber, lang) {
-    if (!['english', 'russian'].includes(lang)) {
-      throw new Error('Please enter correct language option');
-    }
-
-    const keyRow = createElement('div', ['keyboard__row']);
-
-    this.keyLayouts[lang][rowNumber].forEach((keyData, keyDataIndex) => {
+  createKeys() {
+    this.keyLayouts[this.currentLanguage].forEach((keyData) => {
       const newKey = new Key(keyData);
       newKey.init();
       newKey.addSize();
       newKey.addColor();
 
       // Specify a unique code identifier
-      newKey.element.dataset.code =
-        this.keyLayouts[lang][rowNumber][keyDataIndex].code;
+      newKey.element.dataset.code = keyData.code;
 
-      // Keep all current keys in separate array
+      // Keep all current keys in a separate array
       this.keys.push(newKey);
-
-      keyRow.append(newKey.element);
     });
+  }
 
-    return keyRow;
+  createRows() {
+    let accumulatedIndexOfKey = 0;
+
+    this.rowEnds.forEach((rowEnd) => {
+      const newRow = createElement('div', ['keyboard__row']);
+
+      while (accumulatedIndexOfKey < rowEnd) {
+        newRow.append(this.keys[accumulatedIndexOfKey].element);
+        accumulatedIndexOfKey += 1;
+      }
+
+      this.rows.push(newRow);
+    });
   }
 
   createTypingBoard() {
@@ -94,7 +96,8 @@ export default class Keyboard {
   }
 
   handleKey(event) {
-    const { code, type } = event;
+    const { code, type, repeat } = event;
+    const keyCodeInCamelCase = code[0].toLowerCase() + code.slice(1);
     const currentKeyObject = this.keys.find(
       (keyObj) => keyObj.properties.code === code,
     );
@@ -103,31 +106,81 @@ export default class Keyboard {
     event.preventDefault();
     this.typingBoard.focus();
 
+    // If keyDown
     if (type.endsWith('down')) {
-      currentKeyObject.element.classList.add('key--active');
-
-      if (code === 'CapsLock' && !event.repeat) {
+      if (code === 'CapsLock' && !repeat) {
         this.toggleCapsLock();
       }
+
+      if (code.startsWith('Shift') && !repeat) {
+        // If both shifts were disabled, switch layout
+        if (!this.funcKeys.shiftLeft && !this.funcKeys.shiftRight) {
+          this.toggleShift('shift');
+        }
+
+        this.funcKeys[keyCodeInCamelCase] = true;
+      }
+
+      if ((code.startsWith('Shift') || code.startsWith('Alt')) && !repeat) {
+        this.funcKeys[keyCodeInCamelCase] = true;
+
+        const switchCombinationOccured =
+          (this.funcKeys.shiftLeft || this.funcKeys.shiftRight) &&
+          (this.funcKeys.altLeft || this.funcKeys.altRight);
+
+        if (switchCombinationOccured) {
+          this.currentLanguageIndex += 1;
+          if (this.currentLanguageIndex > 1) this.currentLanguageIndex = 0;
+
+          this.switchLanguage(this.currentLanguageIndex);
+        }
+      }
+
+      currentKeyObject.element.classList.add('key--active');
     }
 
+    // If keyUp
     if (type.endsWith('up')) {
+      if (code === 'CapsLock') {
+        if (this.funcKeys.capsLock) return;
+      }
+
+      if (code.startsWith('Shift') && !repeat) {
+        this.funcKeys[keyCodeInCamelCase] = false;
+
+        // If both shifts are disabled now, switch layout again
+        if (!this.funcKeys.shiftLeft && !this.funcKeys.shiftRight) {
+          this.toggleShift('default');
+        }
+      }
+
+      if (code.startsWith('Shift') || code.startsWith('Alt')) {
+        this.funcKeys[keyCodeInCamelCase] = false;
+      }
+
       currentKeyObject.element.classList.remove('key--active');
     }
   }
 
-  switchLanguage(lang) {
-    // Clear array of current keys
-    this.keys = [];
-    this.lang = lang;
+  switchLanguage(newLanguageIndex) {
+    if (newLanguageIndex < 0 || newLanguageIndex > this.languages.length) {
+      throw new Error(
+        'Please enter correct index of new language. Possible options: 0 - english; 1 - russian',
+      );
+    }
 
-    // Make new keyrows in specified language
-    const translatedKeyRows = Array.from(this.keyboardElement.children).map(
-      (oldRow, oldRowIndex) => this.createKeyRow(oldRowIndex, lang),
+    // Update language information
+    this.currentLanguageIndex = newLanguageIndex;
+    this.currentLanguage = this.languages[newLanguageIndex];
+    const newKeyLayout = [...this.keyLayouts[this.currentLanguage]];
+
+    // Update keys
+    const isCapsLockOn = this.funcKeys.capsLock;
+    const isShiftOn = this.funcKeys.shiftLeft || this.funcKeys.shiftRight;
+
+    this.keys.forEach((key, keyIndex) =>
+      key.reinitialize(newKeyLayout[keyIndex], isCapsLockOn, isShiftOn),
     );
-
-    this.keyboardElement.innerHTML = '';
-    this.keyboardElement.append(...translatedKeyRows);
   }
 
   toggleCapsLock() {
@@ -152,6 +205,37 @@ export default class Keyboard {
         } else {
           keyElement.innerText = keyText.toLowerCase();
         }
+      }
+    });
+  }
+
+  toggleShift(textOption) {
+    if (!['default', 'shift'].includes(textOption)) {
+      throw new Error('Please enter correct text option');
+    }
+
+    this.keys.forEach((keyObj) => {
+      const keyElement = keyObj.element;
+      const keyText = keyElement.innerText;
+      const keyTextIsLetter =
+        keyText.length === 1 && keyText.toLowerCase() !== keyText.toUpperCase();
+
+      // If shift variant of key exist,
+      // substitute current key text with it
+      if (keyObj.properties[textOption]) {
+        keyElement.innerText = keyObj.properties[textOption];
+      } else {
+        keyElement.innerText = keyObj.properties.default;
+      }
+
+      // If capsLock is on and we unpress shift
+      // make toggle account for that
+      if (
+        keyTextIsLetter &&
+        this.funcKeys.capsLock &&
+        textOption === 'default'
+      ) {
+        keyElement.innerText = keyElement.innerText.toUpperCase();
       }
     });
   }
