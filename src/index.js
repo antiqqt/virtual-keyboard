@@ -16,6 +16,6 @@ window.addEventListener('DOMContentLoaded', () => {
   keyboard.init();
   // setTimeout(() => keyboard.switchLanguage('russian'), 3000);
 
-  const main = document.querySelector('#main');
-  main.firstElementChild.append(keyboard.keyboardElement);
+  const mainContainer = document.querySelector('#main').firstElementChild;
+  mainContainer.append(keyboard.typingBoard, keyboard.keyboardElement);
 });

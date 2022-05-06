@@ -37,15 +37,7 @@ function createMain() {
 
   const container = createElement('div', ['container', 'container--main']);
 
-  const typingPanel = createElement(
-    'textarea',
-    ['typing-panel'],
-    null,
-    'typing-panel',
-  );
-
   // Combine together
-  container.append(typingPanel);
   main.append(container);
 
   return main;

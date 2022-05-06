@@ -71,8 +71,4 @@ export default class Key {
       elem.classList.add('key--peach');
     }
   }
-
-  // addFunctionality() {
-
-  // }
 }
