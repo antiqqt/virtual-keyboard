@@ -19,6 +19,14 @@ export default class Keyboard {
       capsLock: false,
     };
 
+    this.funcKeys = {
+      capsLock: false,
+      shiftLeft: false,
+      shiftRight: false,
+      altLeft: false,
+      altRight: false,
+    };
+
     // Very important: key layouts should be provided
     // for proper functioning of keyboard module
     this.keyLayouts = { ...keyLayouts };
@@ -69,20 +77,6 @@ export default class Keyboard {
     return keyRow;
   }
 
-  switchLanguage(lang) {
-    // Clear array of current keys
-    this.keys = [];
-    this.lang = lang;
-
-    // Make new keyrows in specified language
-    const translatedKeyRows = Array.from(this.keyboardElement.children).map(
-      (oldRow, oldRowIndex) => this.createKeyRow(oldRowIndex, lang),
-    );
-
-    this.keyboardElement.innerHTML = '';
-    this.keyboardElement.append(...translatedKeyRows);
-  }
-
   createTypingBoard() {
     const typingBoard = createElement(
       'textarea',
@@ -111,10 +105,54 @@ export default class Keyboard {
 
     if (type.endsWith('down')) {
       currentKeyObject.element.classList.add('key--active');
+
+      if (code === 'CapsLock' && !event.repeat) {
+        this.toggleCapsLock();
+      }
     }
 
     if (type.endsWith('up')) {
       currentKeyObject.element.classList.remove('key--active');
     }
+  }
+
+  switchLanguage(lang) {
+    // Clear array of current keys
+    this.keys = [];
+    this.lang = lang;
+
+    // Make new keyrows in specified language
+    const translatedKeyRows = Array.from(this.keyboardElement.children).map(
+      (oldRow, oldRowIndex) => this.createKeyRow(oldRowIndex, lang),
+    );
+
+    this.keyboardElement.innerHTML = '';
+    this.keyboardElement.append(...translatedKeyRows);
+  }
+
+  toggleCapsLock() {
+    if (this.funcKeys.capsLock) {
+      this.funcKeys.capsLock = false;
+    } else {
+      this.funcKeys.capsLock = true;
+    }
+
+    this.keys.forEach((keyObject) => {
+      const keyElement = keyObject.element;
+      const keyText = keyObject.element.innerText;
+
+      // If text in key is one letter
+      // && is not a symbol of some kind
+      if (
+        keyText.length === 1 &&
+        keyText.toLowerCase() !== keyText.toUpperCase()
+      ) {
+        if (this.funcKeys.capsLock) {
+          keyElement.innerText = keyText.toUpperCase();
+        } else {
+          keyElement.innerText = keyText.toLowerCase();
+        }
+      }
+    });
   }
 }
