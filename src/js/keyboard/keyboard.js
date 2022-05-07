@@ -22,10 +22,8 @@ export default class Keyboard {
 
     this.funcKeys = {
       capsLock: false,
-      shiftLeft: false,
-      shiftRight: false,
-      altLeft: false,
-      altRight: false,
+      shift: new Set(),
+      alt: new Set(),
     };
 
     // Very important: key layouts should be provided
@@ -96,8 +94,7 @@ export default class Keyboard {
   }
 
   handleKey(event) {
-    const { code, type, repeat } = event;
-    const keyCodeInCamelCase = code[0].toLowerCase() + code.slice(1);
+    const { key, code, type, repeat } = event;
     const currentKeyObject = this.keys.find(
       (keyObj) => keyObj.properties.code === code,
     );
@@ -108,25 +105,28 @@ export default class Keyboard {
 
     // If keyDown
     if (type.endsWith('down')) {
-      if (code === 'CapsLock' && !repeat) {
+      if (key === 'CapsLock' && !repeat) {
         this.toggleCapsLock();
       }
 
-      if (code.startsWith('Shift') && !repeat) {
+      if (key === 'Shift' && !repeat) {
         // If both shifts were disabled, switch layout
-        if (!this.funcKeys.shiftLeft && !this.funcKeys.shiftRight) {
+        if (!this.funcKeys.shift.size) {
           this.toggleShift('shift');
         }
 
-        this.funcKeys[keyCodeInCamelCase] = true;
+        this.funcKeys.shift.add(code);
       }
 
-      if ((code.startsWith('Shift') || code.startsWith('Alt')) && !repeat) {
-        this.funcKeys[keyCodeInCamelCase] = true;
+      if ((key === 'Shift' || key === 'Alt') && !repeat) {
+        const keyName = currentKeyObject.properties.default.toLowerCase();
+
+        if (!this.funcKeys[keyName].has(code)) {
+          this.funcKeys[keyName].add(code);
+        }
 
         const switchCombinationOccured =
-          (this.funcKeys.shiftLeft || this.funcKeys.shiftRight) &&
-          (this.funcKeys.altLeft || this.funcKeys.altRight);
+          this.funcKeys.shift.size && this.funcKeys.alt.size;
 
         if (switchCombinationOccured) {
           this.currentLanguageIndex += 1;
@@ -141,21 +141,29 @@ export default class Keyboard {
 
     // If keyUp
     if (type.endsWith('up')) {
-      if (code === 'CapsLock') {
+      if (key === 'CapsLock') {
         if (this.funcKeys.capsLock) return;
       }
 
-      if (code.startsWith('Shift') && !repeat) {
-        this.funcKeys[keyCodeInCamelCase] = false;
-
-        // If both shifts are disabled now, switch layout again
-        if (!this.funcKeys.shiftLeft && !this.funcKeys.shiftRight) {
-          this.toggleShift('default');
-        }
+      if (key === 'Shift' || key.startsWith('Alt')) {
+        const keyName = currentKeyObject.properties.default.toLowerCase();
+        this.funcKeys[keyName].delete(code);
       }
 
-      if (code.startsWith('Shift') || code.startsWith('Alt')) {
-        this.funcKeys[keyCodeInCamelCase] = false;
+      if (key === 'Shift') {
+        // If both shifts are disabled now, switch layout again
+        if (!this.funcKeys.shift.size) {
+          this.toggleShift('default');
+        }
+
+        // Browser treats simultaneous shift key press
+        // as one event, so we need to remove active class
+        // from both shifts
+        this.keys.forEach((keyData) => {
+          if (keyData.properties.code.startsWith('Shift')) {
+            keyData.element.classList.remove('key--active');
+          }
+        });
       }
 
       currentKeyObject.element.classList.remove('key--active');
