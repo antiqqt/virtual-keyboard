@@ -86,12 +86,21 @@ export default class Keyboard {
     );
 
     typingBoard.setAttribute('placeholder', 'Try to type anything...');
-    typingBoard.setAttribute('cols', '60');
+    typingBoard.setAttribute('cols', '50');
     typingBoard.setAttribute('spellcheck', 'false');
     typingBoard.setAttribute('autocorrect', 'off');
 
     this.typingBoard = typingBoard;
   }
+
+  /* handlerWrapper(event) {
+    if (event.type.startsWith('key')) {
+      const currentKeyObject = this.keys.find(
+        (keyObj) => keyObj.properties.code === event.code,
+      );
+      if (!currentKeyObject) return;
+    }
+  } */
 
   handleKey(event) {
     const { key, code, type, repeat } = event;
@@ -114,8 +123,6 @@ export default class Keyboard {
         if (!this.funcKeys.shift.size) {
           this.toggleShift('shift');
         }
-
-        this.funcKeys.shift.add(code);
       }
 
       if ((key === 'Shift' || key === 'Alt') && !repeat) {
@@ -137,6 +144,7 @@ export default class Keyboard {
       }
 
       currentKeyObject.element.classList.add('key--active');
+      this.print(currentKeyObject);
     }
 
     // If keyUp
@@ -151,10 +159,8 @@ export default class Keyboard {
       }
 
       if (key === 'Shift') {
-        // If both shifts are disabled now, switch layout again
-        if (!this.funcKeys.shift.size) {
-          this.toggleShift('default');
-        }
+        this.funcKeys.shift.clear();
+        this.toggleShift('default');
 
         // Browser treats simultaneous shift key press
         // as one event, so we need to remove active class
@@ -168,6 +174,51 @@ export default class Keyboard {
 
       currentKeyObject.element.classList.remove('key--active');
     }
+  }
+
+  print(keyObj) {
+    let cursorPosition = this.typingBoard.selectionStart;
+    const leftText = this.typingBoard.value.slice(0, cursorPosition);
+    const rightText = this.typingBoard.value.slice(cursorPosition);
+    const { code } = keyObj.properties;
+
+    if (code.match(/(Caps)|(Alt)|(Shift)|(Control)|(Meta)/g)) {
+      return;
+    }
+
+    switch (code) {
+      case 'Space':
+        this.typingBoard.value = `${leftText} ${rightText}`;
+        cursorPosition += 1;
+        break;
+
+      case 'Tab':
+        this.typingBoard.value = `${leftText}    ${rightText}`;
+        cursorPosition += 4;
+        break;
+
+      case 'Enter':
+        this.typingBoard.value = `${leftText}\n${rightText}`;
+        cursorPosition += 1;
+        break;
+
+      case 'Backspace':
+        this.typingBoard.value = leftText.slice(0, -1) + rightText;
+        cursorPosition -= 1;
+        break;
+
+      case 'Delete':
+        this.typingBoard.value = leftText + rightText.slice(1);
+        break;
+
+      default:
+        this.typingBoard.value =
+          leftText + keyObj.element.innerText + rightText;
+        cursorPosition += 1;
+        break;
+    }
+
+    this.typingBoard.setSelectionRange(cursorPosition, cursorPosition);
   }
 
   switchLanguage(newLanguageIndex) {

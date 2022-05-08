@@ -8,11 +8,11 @@ a {
   cursor: pointer;
 
   &:visited {
-    color: $clr-blue;
+    color: $clr-yellow;
   }
 
   &:hover {
-    color: $clr-scarlet;
+    color: $clr-peach;
   }
 }
 
@@ -52,12 +52,25 @@ a {
 .typing-board {
   height: 200px;
   padding: 0.5em;
+  font-family: 'RobotoMono', monospace;
   font-size: $fs-typing-board;
+  color: $clr-light;
   line-height: 130%;
+  background-color: $clr-grey-dim;
+  border: 3px solid $clr-grey;
   border-radius: 5px;
   hyphens: auto;
   word-break: break-word;
   resize: none;
+
+  &::placeholder {
+    color: $clr-light-xl;
+  }
+
+  &:focus {
+    border: 3px solid $clr-grey;
+    outline: none;
+  }
 }
 
 // Keyboard
@@ -80,12 +93,14 @@ a {
 }
 
 .key {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 40px;
   height: 40px;
   padding: 0;
+  font-family: 'RobotoMono', monospace;
   font-size: $fs-key;
   background-color: $clr-light-xl;
   border: 2px solid $clr-light-dim;
@@ -153,14 +168,34 @@ a {
     background-color: $clr-dark-xl;
     border-color: $clr-dark-xl;
     box-shadow: 0.5px 0.5px 0 $clr-dark-xl;
+    z-index: 1;
+    overflow: hidden;
+    transition: 0.3s;
     transform: scale(0.95);
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: $clr-dark-xl;
+      z-index: -1;
+      transform: translateX(-50%);
+      animation-name: keyPressAnimation;
+      animation-duration: 0.3s;
+    }
   }
 
-  /* &:active {
-    color: $clr-light-xl;
-    background-color: $clr-dark-xl;
-    border-color: $clr-dark-xl;
-    box-shadow: 0.5px 0.5px 0 $clr-dark-xl;
-    transform: scale(0.95);
-  } */
+  @keyframes keyPressAnimation {
+    0% {
+      width: 0;
+    }
+
+    100% {
+      width: 100%;
+    }
+  }
 }

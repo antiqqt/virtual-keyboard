@@ -1,16 +1,8 @@
 // Fonts
 @font-face {
-  font-family: 'Montserrat';
-  src: url('../assets/fonts/Montserrat-Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Montserrat';
-  src: url('../assets/fonts/Montserrat-SemiBold.woff2') format('woff2');
-  font-weight: 600;
-  font-style: bold;
+  font-family: 'RobotoMono';
+  src: url('../assets/fonts/RobotoMono-Medium.woff2') format('woff2');
+  font-weight: 500;
 }
 
 @font-face {
@@ -23,9 +15,9 @@
 // Font sizes
 $fs-heading: 7rem;
 $fs-subheading: 2rem;
-$fs-key: 1.9rem;
+$fs-key: 1.6rem;
 $fs-link: 2rem;
-$fs-typing-board: 2.15rem;
+$fs-typing-board: 2.1rem;
 
 // Font weights
 $fw-bold: 600;

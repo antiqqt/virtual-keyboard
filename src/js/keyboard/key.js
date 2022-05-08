@@ -44,7 +44,7 @@ export default class Key {
     const elemCode = this.properties.code;
 
     if (
-      ['Tab', 'Delete', 'ControlLeft', 'AltLeft', 'MetaLeft'].includes(elemCode)
+      ['Tab', 'Delete', 'ControlLeft', 'MetaLeft', 'AltLeft'].includes(elemCode)
     ) {
       elem.classList.add('key--medium');
     }
