@@ -34,8 +34,16 @@ export default class Keyboard {
   init() {
     // Create keyboard
     this.keyboardElement = createElement('div', ['keyboard'], null, 'keyboard');
-    document.addEventListener('keydown', (e) => this.handleKey(e));
-    document.addEventListener('keyup', (e) => this.handleKey(e));
+
+    // Add handlers
+    document.addEventListener('keydown', (e) => this.handlerWrapper(e));
+    document.addEventListener('keyup', (e) => this.handlerWrapper(e));
+    this.keyboardElement.addEventListener('pointerdown', (e) =>
+      this.handlerWrapper(e),
+    );
+    this.keyboardElement.addEventListener('pointerup', (e) =>
+      this.handlerWrapper(e),
+    );
 
     // Create keyrows
     // and append them to the keyboard
@@ -93,43 +101,60 @@ export default class Keyboard {
     this.typingBoard = typingBoard;
   }
 
-  /* handlerWrapper(event) {
+  handlerWrapper(event) {
+    let currentKeyObject;
+
     if (event.type.startsWith('key')) {
-      const currentKeyObject = this.keys.find(
+      currentKeyObject = this.keys.find(
         (keyObj) => keyObj.properties.code === event.code,
       );
       if (!currentKeyObject) return;
-    }
-  } */
 
-  handleKey(event) {
-    const { key, code, type, repeat } = event;
-    const currentKeyObject = this.keys.find(
-      (keyObj) => keyObj.properties.code === code,
-    );
-    if (!currentKeyObject) return;
+      this.handler(currentKeyObject, event);
+    }
+
+    if (event.type.startsWith('pointer')) {
+      if (!event.target.closest('.key')) {
+        // return if click happened
+        // on something other than key
+        return;
+      }
+
+      currentKeyObject = this.keys.find(
+        (keyObj) => keyObj.properties.code === event.target.dataset.code,
+      );
+      if (!currentKeyObject) return;
+
+      this.handler(currentKeyObject, event);
+    }
+  }
+
+  handler(keyObj, event) {
+    const { type: eventType, repeat } = event;
+    const { default: keyName, code: keyCode } = keyObj.properties;
+    const keyElement = keyObj.element;
 
     event.preventDefault();
     this.typingBoard.focus();
 
-    // If keyDown
-    if (type.endsWith('down')) {
-      if (key === 'CapsLock' && !repeat) {
+    // If keyDown or pointerDown
+    if (eventType.endsWith('down')) {
+      if (keyName === 'CapsLock' && !repeat) {
         this.toggleCapsLock();
       }
 
-      if (key === 'Shift' && !repeat) {
+      if (keyName === 'Shift' && !repeat) {
         // If both shifts were disabled, switch layout
         if (!this.funcKeys.shift.size) {
           this.toggleShift('shift');
         }
       }
 
-      if ((key === 'Shift' || key === 'Alt') && !repeat) {
-        const keyName = currentKeyObject.properties.default.toLowerCase();
+      if ((keyName === 'Shift' || keyName === 'Alt') && !repeat) {
+        const keyNameInCamelCase = keyName.toLowerCase();
 
-        if (!this.funcKeys[keyName].has(code)) {
-          this.funcKeys[keyName].add(code);
+        if (!this.funcKeys[keyNameInCamelCase].has(keyCode)) {
+          this.funcKeys[keyNameInCamelCase].add(keyCode);
         }
 
         const switchCombinationOccured =
@@ -137,28 +162,43 @@ export default class Keyboard {
 
         if (switchCombinationOccured) {
           this.currentLanguageIndex += 1;
-          if (this.currentLanguageIndex > 1) this.currentLanguageIndex = 0;
+          if (this.currentLanguageIndex > 1) {
+            this.currentLanguageIndex = 0;
+          }
 
           this.switchLanguage(this.currentLanguageIndex);
         }
       }
 
-      currentKeyObject.element.classList.add('key--active');
-      this.print(currentKeyObject);
+      if (eventType.startsWith('pointer')) {
+        // Make handler consider pointerleave as pointerup.
+        // Callback arrow function is named, so as to
+        // both keep original this and be able to reference itself
+        // at the same time
+        const pointerLeaveCallback = (e) => {
+          this.handlerWrapper(e);
+          keyElement.removeEventListener('pointerleave', pointerLeaveCallback);
+        };
+
+        keyElement.addEventListener('pointerleave', pointerLeaveCallback);
+      }
+
+      keyObj.element.classList.add('key--active');
+      this.print(keyObj);
     }
 
-    // If keyUp
-    if (type.endsWith('up')) {
-      if (key === 'CapsLock') {
+    // If keyUp or pointerLeave
+    if (eventType.endsWith('up') || eventType.endsWith('leave')) {
+      if (keyName === 'CapsLock') {
         if (this.funcKeys.capsLock) return;
       }
 
-      if (key === 'Shift' || key.startsWith('Alt')) {
-        const keyName = currentKeyObject.properties.default.toLowerCase();
-        this.funcKeys[keyName].delete(code);
+      if (keyName === 'Shift' || keyName.startsWith('Alt')) {
+        const keyNameInCamelCase = keyName.toLowerCase();
+        this.funcKeys[keyNameInCamelCase].delete(keyCode);
       }
 
-      if (key === 'Shift') {
+      if (keyName === 'Shift') {
         this.funcKeys.shift.clear();
         this.toggleShift('default');
 
@@ -170,9 +210,10 @@ export default class Keyboard {
             keyData.element.classList.remove('key--active');
           }
         });
+        return;
       }
 
-      currentKeyObject.element.classList.remove('key--active');
+      keyObj.element.classList.remove('key--active');
     }
   }
 
