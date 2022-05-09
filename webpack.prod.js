@@ -22,6 +22,9 @@ module.exports = merge(common, {
       filename: '[name].css',
     }),
   ],
+  optimization: {
+    minimize: true,
+  },
   output: {
     filename: 'main.js',
   },

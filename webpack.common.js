@@ -7,6 +7,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       title: 'Virtual Keyboard',
       template: 'src/index.html',
+      favicon: 'src/assets/icons/favicon.png',
     }),
   ],
   output: {
