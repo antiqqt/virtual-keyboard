@@ -20,7 +20,6 @@ window.addEventListener('DOMContentLoaded', () => {
   if (preferredLanguageIndex) {
     keyboard.switchLanguage(preferredLanguageIndex);
   }
-  // setTimeout(() => keyboard.switchLanguage('russian'), 3000);
 
   const mainContainer = document.querySelector('#main').firstElementChild;
   mainContainer.append(keyboard.typingBoard, keyboard.keyboardElement);
