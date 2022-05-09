@@ -7,8 +7,12 @@ a {
   transition: 0.4s;
   cursor: pointer;
 
+  &:link {
+    color: $clr-dark;
+  }
+
   &:visited {
-    color: $clr-yellow;
+    color: $clr-dark;
   }
 
   &:hover {
