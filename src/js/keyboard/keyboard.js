@@ -290,20 +290,26 @@ export default class Keyboard {
       this.funcKeys.capsLock = true;
     }
 
-    this.keys.forEach((keyObject) => {
-      const keyElement = keyObject.element;
-      const keyText = keyObject.element.innerText;
+    this.keys.forEach((keyObj) => {
+      const keyElement = keyObj.element;
+      const keyText = keyObj.element.innerText;
+      const isLetter =
+        keyText.length === 1 && keyText.toLowerCase() !== keyText.toUpperCase();
 
-      // If text in key is one letter
-      // && is not a symbol of some kind
-      if (
-        keyText.length === 1 &&
-        keyText.toLowerCase() !== keyText.toUpperCase()
-      ) {
+      if (isLetter) {
         if (this.funcKeys.capsLock) {
           keyElement.innerText = keyText.toUpperCase();
         } else {
           keyElement.innerText = keyText.toLowerCase();
+        }
+      }
+
+      // If shift is on, we need to reverse capslock
+      if (isLetter && this.funcKeys.shift.size) {
+        if (this.funcKeys.capsLock) {
+          keyElement.innerText = keyText.toLowerCase();
+        } else {
+          keyElement.innerText = keyText.toUpperCase();
         }
       }
     });
@@ -317,7 +323,7 @@ export default class Keyboard {
     this.keys.forEach((keyObj) => {
       const keyElement = keyObj.element;
       const keyText = keyElement.innerText;
-      const keyTextIsLetter =
+      const isLetter =
         keyText.length === 1 && keyText.toLowerCase() !== keyText.toUpperCase();
 
       // If shift variant of key exist,
@@ -328,14 +334,22 @@ export default class Keyboard {
         keyElement.innerText = keyObj.properties.default;
       }
 
-      // If capsLock is on and we unpress shift
-      // make toggle account for that
-      if (
-        keyTextIsLetter &&
-        this.funcKeys.capsLock &&
-        textOption === 'default'
-      ) {
-        keyElement.innerText = keyElement.innerText.toUpperCase();
+      // If key is letter and caps is on, make letters lowerCase
+      if (isLetter) {
+        if (this.funcKeys.capsLock) {
+          keyElement.innerText = keyElement.innerText.toLowerCase();
+        } else {
+          keyElement.innerText = keyElement.innerText.toUpperCase();
+        }
+      }
+
+      // Revert the changes if we unpress shift
+      if (isLetter && textOption === 'default') {
+        if (this.funcKeys.capsLock) {
+          keyElement.innerText = keyElement.innerText.toUpperCase();
+        } else {
+          keyElement.innerText = keyElement.innerText.toLowerCase();
+        }
       }
     });
   }
