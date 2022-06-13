@@ -1,0 +1,58 @@
+// Fonts
+@font-face {
+  font-family: 'RobotoMono';
+  src: url('../assets/fonts/RobotoMono-Medium.woff2') format('woff2');
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'Special Elite';
+  src: url('../assets/fonts/SpecialElite-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+// Font sizes
+$fs-heading: 7rem;
+$fs-subheading: 2rem;
+$fs-key: 1.6rem;
+$fs-link: 2rem;
+$fs-typing-board: 2.1rem;
+
+// Font weights
+$fw-bold: 600;
+$fw-regular: 400;
+
+// Font families
+$ff-heading: 'Special Elite', sans-serif;
+$ff-regular: 'Montserrat', sans-serif;
+$ff-link: 'Special Elite', sans-serif;
+
+// Container sizes
+$max-width: 1280px;
+
+// Colors
+$clr-dark: #2e2f34;
+$clr-dark-xl: #1f2027;
+
+$clr-light: #ebecec;
+$clr-light-dim: #b4b4b4;
+$clr-light-xl: #f2f2f4;
+
+$clr-purple: #775d9a;
+$clr-purple-dim: #503c69;
+
+$clr-scarlet: #c3577f;
+$clr-scarlet-dim: #803852;
+
+$clr-blue: #4ea1c7;
+$clr-blue-dim: #3c7b99;
+
+$clr-yellow: #ffed7d;
+$clr-yellow-dim: #d4c564;
+
+$clr-peach: #f6927a;
+$clr-peach-dim: #c77864;
+
+$clr-grey: #9498a3;
+$clr-grey-dim: #5e6169;
