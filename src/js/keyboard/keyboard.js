@@ -218,34 +218,94 @@ export default class Keyboard {
   }
 
   print(keyObj) {
-    let cursorPosition = this.typingBoard.selectionStart;
-    const leftText = this.typingBoard.value.slice(0, cursorPosition);
-    const rightText = this.typingBoard.value.slice(cursorPosition);
+    let cursorPos = this.typingBoard.selectionStart;
+    const leftText = this.typingBoard.value.slice(0, cursorPos);
+    const rightText = this.typingBoard.value.slice(cursorPos);
     const { code } = keyObj.properties;
 
     if (code.match(/(Caps)|(Alt)|(Shift)|(Control)|(Meta)/g)) {
       return;
     }
 
+    if (code.match(/(ArrowUp)/)) {
+      const upperRows = leftText.split('\n');
+      const upperRow = upperRows[upperRows.length - 2];
+
+      if (!upperRow && upperRow !== '') {
+        cursorPos = 0;
+        this.typingBoard.setSelectionRange(cursorPos, cursorPos);
+        return;
+      }
+
+      const currentRowLeft = upperRows[upperRows.length - 1];
+      const cursorLeftOffset = currentRowLeft.length;
+      const upperRowIsShorter = upperRow.length < cursorLeftOffset;
+
+      if (upperRowIsShorter) {
+        cursorPos -= cursorLeftOffset + '\n'.length;
+      } else {
+        cursorPos -= upperRow.length + '\n'.length;
+      }
+    }
+
+    if (code.match(/(ArrowDown)/)) {
+      const lowerRows = rightText.split('\n');
+      const lowerRow = lowerRows[1];
+
+      if (!lowerRow && lowerRow !== '') {
+        cursorPos = this.typingBoard.value.length;
+        this.typingBoard.setSelectionRange(cursorPos, cursorPos);
+        return;
+      }
+
+      const upperRows = leftText.split('\n');
+      const currentRowLeftText = upperRows[upperRows.length - 1];
+      const currentRowRightText = lowerRows[0];
+      const cursorLeftOffset = currentRowLeftText.length;
+      const cursorRightOffset = currentRowRightText.length;
+
+      const lowerRowIsShorter = lowerRow.length < cursorLeftOffset;
+
+      if (lowerRowIsShorter) {
+        cursorPos += cursorRightOffset + '\n'.length + lowerRow.length;
+      } else {
+        cursorPos += cursorRightOffset + '\n'.length + cursorLeftOffset;
+      }
+    }
+
+    if (code.match(/(ArrowLeft)/)) {
+      cursorPos -= 1;
+      if (cursorPos < 0) cursorPos = 0;
+    }
+
+    if (code.match(/(ArrowRight)/)) {
+      cursorPos += 1;
+    }
+
+    if (code.match(/(Arrow)/)) {
+      this.typingBoard.setSelectionRange(cursorPos, cursorPos);
+      return;
+    }
+
     switch (code) {
       case 'Space':
         this.typingBoard.value = `${leftText} ${rightText}`;
-        cursorPosition += 1;
+        cursorPos += 1;
         break;
 
       case 'Tab':
         this.typingBoard.value = `${leftText}    ${rightText}`;
-        cursorPosition += 4;
+        cursorPos += 4;
         break;
 
       case 'Enter':
         this.typingBoard.value = `${leftText}\n${rightText}`;
-        cursorPosition += 1;
+        cursorPos += 1;
         break;
 
       case 'Backspace':
         this.typingBoard.value = leftText.slice(0, -1) + rightText;
-        cursorPosition -= 1;
+        cursorPos -= 1;
         break;
 
       case 'Delete':
@@ -255,11 +315,11 @@ export default class Keyboard {
       default:
         this.typingBoard.value =
           leftText + keyObj.element.innerText + rightText;
-        cursorPosition += 1;
+        cursorPos += 1;
         break;
     }
 
-    this.typingBoard.setSelectionRange(cursorPosition, cursorPosition);
+    this.typingBoard.setSelectionRange(cursorPos, cursorPos);
   }
 
   switchLanguage(newLanguageIndex) {
