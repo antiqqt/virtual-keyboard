@@ -1,0 +1,206 @@
+// Buttons
+// Links
+a {
+  font-family: $ff-link;
+  font-size: $fs-link;
+  text-decoration: none;
+  transition: 0.4s;
+  cursor: pointer;
+
+  &:link {
+    color: $clr-dark;
+  }
+
+  &:visited {
+    color: $clr-dark;
+  }
+
+  &:hover {
+    color: $clr-peach;
+  }
+}
+
+// Headings
+.heading {
+  position: relative;
+  font-family: $ff-heading;
+  font-size: $fs-heading;
+  color: $clr-dark;
+  line-height: 130%;
+  letter-spacing: 0.006em;
+}
+
+.subheading {
+  font-family: $ff-heading;
+  font-size: $fs-subheading;
+  font-weight: $fw-bold;
+  color: $clr-dark;
+  word-spacing: 0.25em;
+}
+
+// About me block
+.about-me {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  column-gap: 12.5%;
+  white-space: nowrap;
+
+  &__link {
+    display: inline-block;
+    width: max-content;
+  }
+}
+
+// Typing board
+.typing-board {
+  height: 207px;
+  padding: 0.5em;
+  font-family: 'RobotoMono', monospace;
+  font-size: $fs-typing-board;
+  color: $clr-light;
+  line-height: 130%;
+  background-color: $clr-grey-dim;
+  border: 3px solid $clr-grey;
+  border-radius: 5px;
+  hyphens: auto;
+  word-break: break-word;
+  resize: none;
+  overflow: hidden;
+
+  &::placeholder {
+    color: $clr-light-xl;
+  }
+
+  &:focus {
+    border: 3px solid $clr-grey;
+    outline: none;
+  }
+}
+
+// Keyboard
+.keyboard {
+  display: flex;
+  flex-direction: column;
+  row-gap: 6px;
+  padding: 10px;
+  background-color: $clr-dark;
+  border: none;
+  border-radius: 3px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+  user-select: none;
+
+  &__row {
+    display: flex;
+    column-gap: 6px;
+    width: 100%;
+  }
+}
+
+.key {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  font-family: 'RobotoMono', monospace;
+  font-size: $fs-key;
+  background-color: $clr-light-xl;
+  border: 2px solid $clr-light-dim;
+  border-radius: 3px;
+  box-shadow: 0.5px 0.5px 0 $clr-light-dim;
+  outline: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.2s;
+
+  &--medium {
+    width: 47px;
+  }
+
+  &--extra-medium {
+    width: 86px;
+  }
+
+  &--wide {
+    width: 100px;
+  }
+
+  &--extra-wide {
+    width: 309.5px;
+  }
+
+  &--grey {
+    background-color: $clr-grey;
+    border-color: $clr-grey-dim;
+    box-shadow: 0.5px 0.5px 0 $clr-grey-dim;
+  }
+
+  &--blue {
+    background-color: $clr-blue;
+    border-color: $clr-blue-dim;
+    box-shadow: 0.5px 0.5px 0 $clr-blue-dim;
+  }
+
+  &--purple {
+    background-color: $clr-purple;
+    border-color: $clr-purple-dim;
+    box-shadow: 0.5px 0.5px 0 $clr-purple-dim;
+  }
+
+  &--scarlet {
+    background-color: $clr-scarlet;
+    border-color: $clr-scarlet-dim;
+    box-shadow: 0.5px 0.5px 0 $clr-scarlet-dim;
+  }
+
+  &--yellow {
+    background-color: $clr-yellow;
+    border-color: $clr-yellow-dim;
+    box-shadow: 0.5px 0.5px 0 $clr-yellow-dim;
+  }
+
+  &--peach {
+    background-color: $clr-peach;
+    border-color: $clr-peach-dim;
+    box-shadow: 0.5px 0.5px 0 $clr-peach-dim;
+  }
+
+  &--active {
+    color: $clr-light-xl;
+    background-color: $clr-dark-xl;
+    border-color: $clr-dark-xl;
+    box-shadow: 0.5px 0.5px 0 $clr-dark-xl;
+    z-index: 1;
+    overflow: hidden;
+    transition: 0.3s;
+    transform: scale(0.95);
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: $clr-dark-xl;
+      z-index: -1;
+      transform: translateX(-50%);
+      animation-name: keyPressAnimation;
+      animation-duration: 0.3s;
+    }
+  }
+
+  @keyframes keyPressAnimation {
+    0% {
+      width: 0;
+    }
+
+    100% {
+      width: 100%;
+    }
+  }
+}

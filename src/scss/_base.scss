@@ -1,0 +1,45 @@
+:root {
+  font-family: $ff-regular;
+  font-weight: $fw-regular;
+  font-size: 10px; /* Set to 10px to scale comfortably */
+}
+
+/**
+ * Set up a decent box model on the root element
+ */
+html {
+  box-sizing: border-box;
+}
+
+/* 
+Make all elements from the DOM 
+inherit from the parent box-sizing 
+ */
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+/* Make sure children take 
+full height of its parent */
+html,
+body {
+  height: 100%;
+  min-height: 100vh;
+}
+
+/* Clear default html margins */
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+p {
+  margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
